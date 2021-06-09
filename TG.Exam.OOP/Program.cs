@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TG.Exam.OOP
 {
@@ -10,21 +7,21 @@ namespace TG.Exam.OOP
     {
         static void Main(string[] args)
         {
-            var objs = GetObjects();
+            List<object> objs = GetObjects();
 
             objs.ForEach(o =>
             {
-                Console.WriteLine("Object:\r\n{0}", o.ToString2());
+                Console.WriteLine("Object:\r\n{0}", o);
             });
 
             Console.ReadKey();
         }
 
-        private static List<dynamic> GetObjects()
+        private static List<object> GetObjects()
         {
-            var objs = new List<dynamic>
+            var objs = new List<object>
             {
-                new Employee 
+                new Employee
                 {
                     FirstName = "Employee1FN",
                     LastName = "Employee1LN",
