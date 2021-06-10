@@ -11,7 +11,7 @@ namespace TG.Exam.SQL
 {
     public class DAL
     {
-        private SqlConnection GetConnection() 
+        private SqlConnection GetConnection()
         {
             var connectionString = ConfigurationManager.AppSettings["ConnectionString"];
 
@@ -53,7 +53,7 @@ namespace TG.Exam.SQL
 
         public DataTable GetAllOrders()
         {
-            var sql = String.Empty;
+            var sql = @"Select * From [Orders]";
 
             var ds = GetData(sql);
 
@@ -61,9 +61,11 @@ namespace TG.Exam.SQL
 
             return result;
         }
+
         public DataTable GetAllOrdersWithCustomers()
         {
-            var sql = String.Empty;
+            var sql = @"Select o.OrderId, o.OrderDate, c.CustomerFirstName, c.CustomerLastName 
+                        From [Orders] As o Join [Customers] As c On c.CustomerId = o.OrderCustomerId";
 
             var ds = GetData(sql);
 
@@ -74,7 +76,10 @@ namespace TG.Exam.SQL
 
         public DataTable GetAllOrdersWithPriceUnder(int price)
         {
-            var sql = String.Empty;
+            var sql = $@"Select o.OrderId, Sum([ItemPrice] *oi.Count) As PriseOrder
+                        From [Items] As i Join [OrdersItems] As oi On i.ItemId = oi.ItemId Join [Orders] As o on o.OrderId = oi.OrderId
+                        Group By o.OrderId
+                        Having Sum([ItemPrice] *oi.Count) < {price}";
 
             var ds = GetData(sql);
 
@@ -85,14 +90,20 @@ namespace TG.Exam.SQL
 
         public void DeleteCustomer(int orderId)
         {
-            var sql = String.Empty;
-
+            var sql = $@"Delete From [Customers] Where [CustomerId] In
+                            (Select [OrderCustomerId] From [Orders] Where [OrderId]={orderId});
+                        Delete From [OrdersItems] Where [OrderId] = {orderId};
+                        Delete From [Orders] Where [OrderId] = {orderId};
+                        ";
             Execute(sql);
         }
 
         internal DataTable GetAllItemsAndTheirOrdersCountIncludingTheItemsWithoutOrders()
         {
-            var sql = String.Empty;
+            var sql = @"Select i.ItemId, i.ItemName, count(oi.ItemId) As Count
+                        From [OrdersItems] As oi 
+                        Right Join Items i On oi.ItemId = i.ItemId 
+                        Group By i.ItemId, i.ItemName";
 
             var ds = GetData(sql);
 
