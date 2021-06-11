@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+ using  TG.Exam.WebMVC.Models;
 
 namespace TG.Exam.WebMVC.Controllers
 {
@@ -10,7 +11,8 @@ namespace TG.Exam.WebMVC.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            var data = TG.Exam.WebMVC.Models.User.GetAll();
+            return View(data);
         }
 
         public ActionResult About()
