@@ -4,27 +4,31 @@
 }
 
 <div class="row">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Age</th>
-          <th>Fetch method</th>
-        </tr>
-      </thead>
-      <tbody>
+  <button type="button" class="btn btn-secondary" id="getAllAsync">Async</button>
+  <table class="table">
+    <thead>
+    <tr>
+      <th>#</th>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Age</th>
+      <th>Fetch method</th>
+    </tr>
+    </thead>
+    <tbody id="usersData">
       @for (int i = 0; i < Model.Count; i++)
       {
         <tr>
-          <th scope="row">@(i+1)</th>
+          <td>@(i + 1)</td>
           <td>@Model[i].FirstName</td>
           <td>@Model[i].LastName</td>
           <td>@Model[i].Age</td>
           <td>Sync</td>
         </tr>
       }
-      </tbody>
-    </table>
+    </tbody>
+  </table>
 </div>
+@section Scripts {
+  @Scripts.Render("~/bundles/getData")
+}
