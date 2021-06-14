@@ -1,20 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using log4net;
 using log4net.Config;
+using TG.Exam.Refactoring.Repositories;
 
 namespace TG.Exam.Refactoring
 {
     public class OrderService : IOrderService
     {
-        private static readonly ILog logger = LogManager.GetLogger(typeof(OrderService));
+        //написать с большой буквы переменную logger
+        //private static readonly ILog logger = LogManager.GetLogger(typeof(OrderService));
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(OrderService));
 
-        readonly string connectionString = ConfigurationManager.ConnectionStrings["OrdersDBConnectionString"].ConnectionString;
+        //так как класс переполнен логикой, была выделена логика работы с бд в отдельный класс
+        private CacheRepository CacheRepository { get; set; } = CacheRepository.GetInstance();
 
-        public IDictionary<string, Order> cache = new Dictionary<string, Order>();
+        //так как класс переполнен логикой, была выделена логика работы с кэшем в отдельный класс
+        private readonly IDatabaseRepository _databaseRepository = new DatabaseRepository();
+
 
         public OrderService()
         {
@@ -25,54 +29,44 @@ namespace TG.Exam.Refactoring
         {
             try
             {
-                Debug.Assert(null != orderId && orderId != "");
-                Stopwatch stopWatch = new Stopwatch();
+                //условие можно написать короче
+                //Debug.Assert(null != orderId && orderId != "");
+                Debug.Assert(!string.IsNullOrEmpty(orderId));
+                var stopWatch = new Stopwatch();
                 stopWatch.Start();
-                lock (cache)
-                {
-                    if (cache.ContainsKey(orderId))
-                    {
-                        stopWatch.Stop();
-                        logger.InfoFormat("Elapsed - {0}", stopWatch.Elapsed);
-                        return cache[orderId];
-                    }
-                }
-                string queryTemplate =
-                  "SELECT OrderId, OrderCustomerId, OrderDate" +
-                  "  FROM dbo.Orders where OrderId='{0}'";
-                string query = string.Format(queryTemplate, orderId);
-                SqlConnection connection =
-                  new SqlConnection(this.connectionString);
-                SqlCommand command =
-                  new SqlCommand(query, connection);
-                connection.Open();
-                SqlDataReader reader = command.ExecuteReader();
-                if (reader.Read())
-                {
-                    Order order = new Order
-                    {
-                        OrderId = (int) reader[0],
-                        OrderCustomerId = (int) reader[1],
-                        OrderDate = (DateTime) reader[2]
-                    };
 
-                    lock (cache)
-                    {
-                        if (!cache.ContainsKey(orderId))
-                            cache[orderId] = order;
-                    }
-                    stopWatch.Stop();
-                    logger.InfoFormat("Elapsed - {0}", stopWatch.Elapsed);
-                    return order;
+                var orderFromCache = CacheRepository.Get(orderId, stopWatch);
+
+                if (orderFromCache != null)
+                {
+                    return orderFromCache;
                 }
+
+                var orderFromDataBase = _databaseRepository.GetOrder(orderId);
+
+                if (orderFromDataBase != null)
+                {
+                    CacheRepository.Set(orderFromDataBase);
+                    stopWatch.Stop();
+
+                    //непонятно что выводится в лог,необходимо добавить информацию о данных в вывод лога
+                    Logger.InfoFormat("Elapsed - {0}", stopWatch.Elapsed);
+                    return orderFromDataBase;
+                }
+
                 stopWatch.Stop();
-                logger.InfoFormat("Elapsed - {0}", stopWatch.Elapsed);
+
+                //непонятно что выводится в лог,необходимо добавить информацию о данных в вывод лога
+                Logger.InfoFormat("Elapsed - {0}", stopWatch.Elapsed);
                 return null;
             }
             catch (SqlException ex)
             {
-                logger.Error(ex.Message);
-                throw new ApplicationException("Error");
+                Logger.Error(ex.Message);
+
+                //неполная информация об ощибке, необходимо дополнить
+                // throw new ApplicationException("Error");
+                throw new ApplicationException("Error", ex);
             }
         }
     }
