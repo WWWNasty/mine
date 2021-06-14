@@ -29,9 +29,15 @@ namespace TG.Exam.Refactoring
         //public Order LoadOrder(string orderId)
         public Order LoadOrder(int orderId)
         {
+            //проверка вместо Debug.Assert(orderId != 0);
+            if (orderId == 0)
+            {
+                throw new ArgumentException(nameof(orderId));
+            }
             try
             {
-                Debug.Assert(orderId != 0);
+                //работает только в дебаге, необходимо добавить проверку
+                //Debug.Assert(orderId != 0);
                 var stopWatch = new Stopwatch();
                 stopWatch.Start();
 
