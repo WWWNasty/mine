@@ -25,13 +25,13 @@ namespace TG.Exam.Refactoring
             BasicConfigurator.Configure();
         }
 
-        public Order LoadOrder(string orderId)
+        //тип orderId должен быть int чтоб избежать sql-иньекций и в бд это поле типа int
+        //public Order LoadOrder(string orderId)
+        public Order LoadOrder(int orderId)
         {
             try
             {
-                //условие можно написать короче
-                //Debug.Assert(null != orderId && orderId != "");
-                Debug.Assert(!string.IsNullOrEmpty(orderId));
+                Debug.Assert(orderId != 0);
                 var stopWatch = new Stopwatch();
                 stopWatch.Start();
 

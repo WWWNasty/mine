@@ -13,7 +13,7 @@ namespace TG.Exam.Refactoring.Repositories
         private readonly string _connectionString =
             ConfigurationManager.ConnectionStrings["OrdersDBConnectionString"].ConnectionString;
 
-        public Order GetOrder(string orderId)
+        public Order GetOrder(int orderId)
         {
             var connection = new SqlConnection(_connectionString);
 
@@ -24,8 +24,8 @@ namespace TG.Exam.Refactoring.Repositories
                 // string queryTemplate =
                 //   "SELECT OrderId, OrderCustomerId, OrderDate" +
                 //   "  FROM dbo.Orders where OrderId='{0}'";
-                var queryTemplate = @"STRING_ESCAPE( 'SELECT OrderId, OrderCustomerId, OrderDate
-                                                  FROM dbo.Orders WHERE OrderId={0}' , 'string' ) ";
+                var queryTemplate = @"SELECT OrderId, OrderCustomerId, OrderDate
+                                                  FROM dbo.Orders WHERE OrderId={0}";
 
                 var query = string.Format(queryTemplate, orderId);
 

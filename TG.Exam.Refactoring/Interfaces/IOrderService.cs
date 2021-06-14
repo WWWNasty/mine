@@ -8,7 +8,7 @@ namespace TG.Exam.Refactoring
     public interface IOrderService
     {
         [OperationContract]
-        Order LoadOrder(string orderId);
+        Order LoadOrder(int orderId);
     }
 
 

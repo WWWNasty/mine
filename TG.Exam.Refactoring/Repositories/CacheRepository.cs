@@ -13,7 +13,7 @@ namespace TG.Exam.Refactoring.Repositories
 
         //необходимы модификаторы доступа private readonly и назвать переменную cache - _cache
         //public IDictionary<string, Order> cache = new Dictionary<string, Order>();
-        private readonly IDictionary<string, Order> _cache = new Dictionary<string, Order>();
+        private readonly IDictionary<int, Order> _cache = new Dictionary<int, Order>();
         private static readonly ILog Logger = LogManager.GetLogger(typeof(OrderService));
 
         private CacheRepository()
@@ -34,7 +34,7 @@ namespace TG.Exam.Refactoring.Repositories
             return _instance;
         }
 
-        public Order Get(string orderId, Stopwatch stopWatch)
+        public Order Get(int orderId, Stopwatch stopWatch)
         {
             lock (_cache)
             {
@@ -50,8 +50,8 @@ namespace TG.Exam.Refactoring.Repositories
         {
             lock (_cache)
             {
-                if (!_cache.ContainsKey(order.OrderId.ToString()))
-                    _cache[order.OrderId.ToString()] = order;
+                if (!_cache.ContainsKey(order.OrderId))
+                    _cache[order.OrderId] = order;
             }
         }
     }
