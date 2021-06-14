@@ -68,7 +68,7 @@
             this.btnShowOrderAbove.Name = "btnShowOrderAbove";
             this.btnShowOrderAbove.Size = new System.Drawing.Size(149, 23);
             this.btnShowOrderAbove.TabIndex = 2;
-            this.btnShowOrderAbove.Text = "Show orders above (>)";
+            this.btnShowOrderAbove.Text = "Show orders below (<)";
             this.btnShowOrderAbove.UseVisualStyleBackColor = true;
             this.btnShowOrderAbove.Click += new System.EventHandler(this.btnShowOrderWithTotalPriceUnderX_Click);
             // 
